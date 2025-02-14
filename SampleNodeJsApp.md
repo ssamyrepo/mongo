@@ -401,5 +401,225 @@ curl -v http://54.221.63.248:5000/api/books
 ```
 If you get **"Connection refused"**, restart the server.
 
+The **"Cannot GET /api/books"** error means that the **server is not handling the GET request correctly** or is **not running**.  
+
 ---
+
+### **🔹 Steps to Fix the Issue Before Testing in Postman**
+#### ✅ **1. Check If the Server is Running**
+Run this command on your EC2 instance to check if your Express server is active:
+```bash
+ps aux | grep node
+```
+If your server **is not running**, restart it:
+```bash
+pkill node
+node app.js
+```
+Then, confirm it's running:
+```bash
+curl -X GET http://54.221.63.248:5000/api/books
+```
+If you **still see "Cannot GET /api/books"**, move to the next step.
+
+---
+
+#### ✅ **2. Verify Express Route in `app.js`**
+Open `app.js` and make sure you have this **`GET` route for `/api/books`**:
+```javascript
+app.get('/api/books', async (req, res) => {
+  try {
+    const db = client.db('library');
+    const collection = db.collection('books');
+    const books = await collection.find({}).toArray();
+    res.status(200).json(books);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving books", error });
+  }
+});
+```
+- If this route is **missing**, add it and restart the server.
+
+---
+
+#### ✅ **3. Ensure Server is Listening on the Correct Port**
+In `app.js`, verify that the **server is bound to `0.0.0.0`** so it is accessible externally:
+```javascript
+const port = process.env.PORT || 5000;
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${port}`);
+});
+```
+Then restart the server:
+```bash
+pkill node
+node app.js
+```
+---
+
+### **🚀 Steps to Test in Postman**
+Once the **server is running**, follow these steps to test in **Postman**:
+
+---
+
+## **📌 1. Open Postman**
+- If you haven’t already, **[download Postman](https://www.postman.com/downloads/)** and open it.
+
+---
+
+## **📌 2. Test `GET /api/books` (Retrieve All Books)**
+1. **Open Postman**.
+2. **Select `GET`** from the dropdown.
+3. **Enter the URL**:
+   ```
+   http://54.221.63.248:5000/api/books
+   ```
+4. **Click "Send"**.
+
+### **✅ Expected Response:**
+```json
+[
+  {
+    "_id": "67af6b6f4d3a3a722786e95e",
+    "title": "Updated Title",
+    "author": "John Doe",
+    "pages": 120
+  }
+]
+```
+- If you **still see "Cannot GET /api/books"**, restart the server and check security groups.
+
+---
+
+## **📌 3. Test `POST /api/books` (Create a New Book)**
+1. **Select `POST`** from the dropdown.
+2. **Enter the URL**:
+   ```
+   http://54.221.63.248:5000/api/books
+   ```
+3. **Go to the `Headers` tab** and add:
+   ```
+   Key:   Content-Type
+   Value: application/json
+   ```
+4. **Go to the `Body` tab**, select **raw**, and paste:
+   ```json
+   {
+     "title": "Postman Test Book",
+     "author": "John Doe",
+     "pages": 200
+   }
+   ```
+5. **Click "Send"**.
+
+### **✅ Expected Response:**
+```json
+{
+  "message": "Book created",
+  "id": "67af6b6f4d3a3a722786e95e"
+}
+```
+
+---
+
+## **📌 4. Test `GET /api/books/:id` (Retrieve a Book by ID)**
+1. **Select `GET`**.
+2. **Enter the URL**, replacing `<id>` with an actual book `_id`:
+   ```
+   http://54.221.63.248:5000/api/books/67af6b6f4d3a3a722786e95e
+   ```
+3. **Click "Send"**.
+
+### **✅ Expected Response:**
+```json
+{
+  "_id": "67af6b6f4d3a3a722786e95e",
+  "title": "Postman Test Book",
+  "author": "John Doe",
+  "pages": 200
+}
+```
+
+---
+
+## **📌 5. Test `PUT /api/books/:id` (Update a Book)**
+1. **Select `PUT`**.
+2. **Enter the URL**:
+   ```
+   http://54.221.63.248:5000/api/books/67af6b6f4d3a3a722786e95e
+   ```
+3. **Go to the `Headers` tab** and add:
+   ```
+   Key:   Content-Type
+   Value: application/json
+   ```
+4. **Go to `Body`**, select **raw**, and paste:
+   ```json
+   {
+     "title": "Updated Title from Postman"
+   }
+   ```
+5. **Click "Send"**.
+
+### **✅ Expected Response:**
+```json
+{
+  "message": "Book updated"
+}
+```
+
+---
+
+## **📌 6. Test `DELETE /api/books/:id` (Delete a Book)**
+1. **Select `DELETE`**.
+2. **Enter the URL**:
+   ```
+   http://54.221.63.248:5000/api/books/67af6b6f4d3a3a722786e95e
+   ```
+3. **Click "Send"**.
+
+### **✅ Expected Response:**
+```json
+{
+  "message": "Book deleted"
+}
+```
+
+---
+
+## **✅ Final Checks**
+### If **Postman still returns "Cannot GET /api/books"**, try these:
+1. **Check if the server is running**:
+   ```bash
+   ps aux | grep node
+   ```
+2. **Check if the Express route exists in `app.js`**.
+3. **Check if Security Group allows port `5000`** (AWS EC2):
+   - Go to AWS Console → EC2 → Security Groups.
+   - Ensure **Inbound Rules** allow:
+     ```
+     Type:  Custom TCP
+     Port:  5000
+     Source: 0.0.0.0/0
+     ```
+4. **Restart the server**:
+   ```bash
+   pkill node
+   node app.js
+   ```
+5. **Run this test manually**:
+   ```bash
+   curl -X GET http://54.221.63.248:5000/api/books
+   ```
+
+---
+
+### 🎯 **Now Postman Should Work!**
+✅ If the API is up and running, you should get **valid responses** for all requests.  
+If the issue persists, **send me the output of**:
+```bash
+ps aux | grep node
+sudo netstat -tulnp | grep 5000
+sudo journalctl -u node --no-pager --lines=50
+```
 
