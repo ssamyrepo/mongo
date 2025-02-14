@@ -1,4 +1,3 @@
-Your **Express.js API** is incorrectly handling **MongoDB ObjectId** when querying, updating, and deleting books by `_id`. MongoDB stores `_id` as an **ObjectId**, but your code is treating it as a **string**.
 
 ### **1. Fix `_id` Handling for ObjectId**
 Modify the **`app.js`** file to correctly **convert the `id` string to ObjectId** before querying MongoDB.
