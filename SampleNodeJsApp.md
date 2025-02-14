@@ -1,4 +1,79 @@
 
+
+### Steps to Update and Run the Application
+
+1. **Update the Code**:
+   - Replace the contents of `app.js` with the updated code above.
+
+2. **Restart the Server**:
+   - Stop the running server (if it’s still running) by pressing `Ctrl+C`.
+   - Start the server again:
+     ```bash
+     node app.js
+     ```
+
+3. **Verify the Output**:
+   - You should no longer see the deprecation warnings.
+   - The server should start successfully:
+     ```
+     Server is running on http://localhost:5000
+     ```
+
+---
+
+### Testing the API
+
+You can now test the API using `curl` or Postman as described in the previous steps. For example:
+
+1. **Create a Book**:
+   ```bash
+   curl -X POST http://<public-ip-of-ec2>:5000/api/books \
+     -H "Content-Type: application/json" \
+     -d '{"title": "Introduction to RESTful APIs", "author": "John Doe", "pages": 120}'
+   ```
+
+2. **Read All Books**:
+   ```bash
+   curl http://<public-ip-of-ec2>:5000/api/books
+   ```
+
+3. **Read a Single Book**:
+   ```bash
+   curl http://<public-ip-of-ec2>:5000/api/books/<book-id>
+   ```
+
+4. **Update a Book**:
+   ```bash
+   curl -X PUT http://<public-ip-of-ec2>:5000/api/books/<book-id> \
+     -H "Content-Type: application/json" \
+     -d '{"title": "Updated Title"}'
+   ```
+
+5. **Delete a Book**:
+   ```bash
+   curl -X DELETE http://<public-ip-of-ec2>:5000/api/books/<book-id>
+   ```
+
+---
+
+### Troubleshooting
+
+If you encounter any issues:
+1. **Check MongoDB Connection**:
+   - Ensure the MongoDB connection string (`uri`) is correct.
+   - Verify that the EC2 instance's IP is whitelisted in MongoDB Atlas.
+
+2. **Check Server Logs**:
+   - Look for any errors in the server logs when starting the application.
+
+3. **Check Firewall Rules**:
+   - Ensure the EC2 instance's security group allows inbound traffic on port `5000`.
+
+---
+
+This updated code removes the deprecation warnings and ensures your application runs smoothly. Let me know if you need further assistance!
+
+
 ### **1. Fix `_id` Handling for ObjectId**
 Modify the **`app.js`** file to correctly **convert the `id` string to ObjectId** before querying MongoDB.
 
