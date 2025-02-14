@@ -235,3 +235,171 @@ curl -v -X DELETE http://54.221.63.248:5000/api/books/67af6aec4d3a3a722786e95d
 
 ### **5. Expected Outcome**
 Your API should now correctly retrieve, update, and delete books by `_id`! 🚀 Try it out and let me know if you need any further assistance.
+
+
+Here is the properly formatted **cURL commands and MongoDB connection strings** for better readability and usage:
+
+---
+
+## **📌 1. Create a New Book**
+```bash
+curl -X POST http://54.221.63.248:5000/api/books \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Introduction to Stanley Samy RESTful APIs",
+    "author": "John Sss",
+    "pages": 120
+  }'
+```
+**Response Example:**
+```json
+{"message":"Book created","id":"67af6aec4d3a3a722786e95d"}
+```
+
+---
+
+## **📌 2. Retrieve a Specific Book by ID**
+```bash
+curl -X GET http://54.221.63.248:5000/api/books/67af6aec4d3a3a722786e95d
+```
+**Response Example (If found):**
+```json
+{
+  "_id": "67af6aec4d3a3a722786e95d",
+  "title": "Introduction to RESTful APIs",
+  "author": "John Doe",
+  "pages": 120
+}
+```
+**Response Example (If not found):**
+```json
+{"message":"Book not found"}
+```
+
+---
+
+## **📌 3. Retrieve All Books**
+```bash
+curl -X GET http://54.221.63.248:5000/api/books
+```
+
+**Response Example:**
+```json
+[
+  {
+    "_id": "67af6aec4d3a3a722786e95d",
+    "title": "Introduction to RESTful APIs",
+    "author": "John Doe",
+    "pages": 120
+  },
+  {
+    "_id": "67af6b6f4d3a3a722786e95e",
+    "title": "Introduction to MongoDB RESTful APIs",
+    "author": "s sa",
+    "pages": 120
+  }
+]
+```
+
+---
+
+## **📌 4. Update a Book by ID**
+```bash
+curl -X PUT http://54.221.63.248:5000/api/books/67af6aec4d3a3a722786e95d \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated Title"
+  }'
+```
+
+**Response Example (If Updated Successfully):**
+```json
+{"message":"Book updated"}
+```
+**Response Example (If Not Found):**
+```json
+{"message":"Book not found"}
+```
+
+---
+
+## **📌 5. Delete a Book by ID**
+```bash
+curl -X DELETE http://54.221.63.248:5000/api/books/67af6aec4d3a3a722786e95d
+```
+
+**Response Example (If Deleted Successfully):**
+```json
+{"message":"Book deleted"}
+```
+**Response Example (If Not Found):**
+```json
+{"message":"Book not found"}
+```
+
+---
+
+## **📌 6. Generalized Commands with `<PUBLIC_IP>` and `<BOOK_ID>`**
+Use these placeholders if you're testing on a different EC2 instance:
+
+- **Create a Book:**
+  ```bash
+  curl -X POST http://<public-ip-of-ec2>:5000/api/books \
+    -H "Content-Type: application/json" \
+    -d '{"title": "Introduction to RESTful APIs", "author": "John Doe", "pages": 120}'
+  ```
+
+- **Update a Book:**
+  ```bash
+  curl -X PUT http://<public-ip-of-ec2>:5000/api/books/<book-id> \
+    -H "Content-Type: application/json" \
+    -d '{"title": "Updated Title"}'
+  ```
+
+---
+
+## **📌 7. MongoDB Connection Strings**
+### **✅ Correct MongoDB Connection String**
+```javascript
+const uri = "mongodb+srv://<username>:<password>@sandbox.fswdn.mongodb.net/library?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true";
+```
+
+---
+
+## **📌 8. MongoDB Connection Using `.env` File (Secure Method)**
+Instead of exposing credentials, store them in a `.env` file:
+
+### **➜ Step 1: Create `.env` file**
+```bash
+nano .env
+```
+
+**Add this inside:**
+```ini
+MONGO_URI=mongodb+srv://<username>:<password>@sandbox.fswdn.mongodb.net/library?retryWrites=true&w=majority
+```
+
+### **➜ Step 2: Modify `app.js` to use `.env`**
+```javascript
+require('dotenv').config(); // Load environment variables
+
+const uri = process.env.MONGO_URI;
+```
+
+### **➜ Step 3: Restart Server**
+```bash
+pkill node
+node app.js
+```
+
+---
+
+## **📌 9. Quick Debugging - Test Server Connection**
+To check if the **server is running**, use:
+```bash
+curl -v http://54.221.63.248:5000/api/books
+```
+If you get **"Connection refused"**, restart the server.
+
+---
+
