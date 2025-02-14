@@ -125,7 +125,6 @@ app.get('/api/books', async (req, res) => {
 app.get('/api/books/:id', async (req, res) => {
   const db = client.db('library');
   const collection = db.collection('books');
-
   try {
     const book = await collection.findOne({ _id: new ObjectId(req.params.id) });
     if (book) {
@@ -133,8 +132,8 @@ app.get('/api/books/:id', async (req, res) => {
     } else {
       res.status(404).json({ message: "Book not found" });
     }
-  } catch (error) {
-    res.status(400).json({ message: "Invalid ID format" });
+  } catch (err) {
+    res.status(400).json({ message: "Invalid ID" });
   }
 });
 
@@ -142,7 +141,6 @@ app.get('/api/books/:id', async (req, res) => {
 app.put('/api/books/:id', async (req, res) => {
   const db = client.db('library');
   const collection = db.collection('books');
-
   try {
     const result = await collection.updateOne(
       { _id: new ObjectId(req.params.id) },
@@ -153,8 +151,8 @@ app.put('/api/books/:id', async (req, res) => {
     } else {
       res.status(404).json({ message: "Book not found" });
     }
-  } catch (error) {
-    res.status(400).json({ message: "Invalid ID format" });
+  } catch (err) {
+    res.status(400).json({ message: "Invalid ID" });
   }
 });
 
@@ -162,7 +160,6 @@ app.put('/api/books/:id', async (req, res) => {
 app.delete('/api/books/:id', async (req, res) => {
   const db = client.db('library');
   const collection = db.collection('books');
-
   try {
     const result = await collection.deleteOne({ _id: new ObjectId(req.params.id) });
     if (result.deletedCount > 0) {
@@ -170,16 +167,15 @@ app.delete('/api/books/:id', async (req, res) => {
     } else {
       res.status(404).json({ message: "Book not found" });
     }
-  } catch (error) {
-    res.status(400).json({ message: "Invalid ID format" });
+  } catch (err) {
+    res.status(400).json({ message: "Invalid ID" });
   }
 });
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://0.0.0.0:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
-```
 
 ---
 
